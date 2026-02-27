@@ -1,0 +1,4 @@
+name = "Please"
+grammar = "starlark"
+path_suffixes = ["BUILD", "BUILD.plz", ".build_defs"]
+line_comments = ["# "]
