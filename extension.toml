@@ -1,12 +1,15 @@
-id = "please"
-name = "Please"
-version = "0.0.1"
-description = "Language support for Please build system (plz) BUILD files"
+id = "please-build"
+name = "Please Build"
+version = "0.1.0"
 schema_version = 1
+authors = ["Michael McCabe <mccmichael@gmail.com>"]
+description = "LSP support for Please (plz) BUILD files via build_langserver."
+repository = "https://github.com/michaelmccabe/please-build"
 
 [grammars.starlark]
 repository = "https://github.com/tree-sitter-grammars/tree-sitter-starlark"
 rev = "a453dbf3ba433db0e5ec621a38a7e59d72e4dc69"
+
 [language_servers.build-langserver]
 name = "Please LSP"
 languages = ["Please"]

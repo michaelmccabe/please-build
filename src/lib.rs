@@ -1,30 +1,46 @@
-use std::env;
-use zed_extension_api::{self as zed, Command, Extension, LanguageServerId, Result};
+use zed_extension_api::{self as zed, settings::LspSettings, LanguageServerId, Result};
 
-struct PleaseExtension;
+struct PleaseBuildExtension;
 
-impl Extension for PleaseExtension {
+impl zed::Extension for PleaseBuildExtension {
     fn new() -> Self {
-        // Load .env file if it exists
-        dotenv::dotenv().ok();
-        PleaseExtension
+        PleaseBuildExtension
     }
 
     fn language_server_command(
         &mut self,
         _language_server_id: &LanguageServerId,
-        _worktree: &zed::Worktree,
-    ) -> Result<Command> {
-        let build_langserver_path = env::var("BUILD_LANGSERVER_PATH")
-            .map_err(|_| "BUILD_LANGSERVER_PATH environment variable not set")?;
+        worktree: &zed::Worktree,
+    ) -> Result<zed::Command> {
+        // 1. Check if the user has set a custom binary path in their settings.json:
+        //    "lsp": { "build_langserver": { "binary": { "path": "/custom/path/build_langserver" } } }
+        let binary_path = LspSettings::for_worktree("build_langserver", worktree)
+            .ok()
+            .and_then(|s| s.binary)
+            .and_then(|b| b.path);
 
-        Ok(Command {
-            command: build_langserver_path,
-            // BUILD_LANGSERVER_PATH environment variable must be set in .env file
-            args: vec!["--stdio".to_string()], // Adjust args if needed; --stdio enables stdio communication
+        let command = match binary_path {
+            Some(path) => path,
+            None => {
+                // 2. Fall back to searching the user's PATH
+                worktree
+                    .which("build_langserver")
+                    .ok_or_else(|| {
+                        "build_langserver not found. \
+                         Build it from the Please repo (https://github.com/thought-machine/please) \
+                         and either add it to your PATH, or set its location in Zed settings:\n\
+                         \"lsp\": { \"build_langserver\": { \"binary\": { \"path\": \"/path/to/build_langserver\" } } }"
+                            .to_string()
+                    })?
+            }
+        };
+
+        Ok(zed::Command {
+            command,
+            args: vec!["--stdio".to_string()],
             env: Default::default(),
         })
     }
 }
 
-zed_extension_api::register_extension!(PleaseExtension);
+zed_extension_api::register_extension!(PleaseBuildExtension);
