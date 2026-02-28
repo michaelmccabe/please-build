@@ -1,6 +1,6 @@
 [package]
-name = "zed_please"
-version = "0.0.1"
+name = "please-build"
+version = "0.1.0"
 edition = "2021"
 publish = false
 license = "MIT"
@@ -9,5 +9,4 @@ license = "MIT"
 crate-type = ["cdylib"]
 
 [dependencies]
-zed_extension_api = "0.1.0"
-dotenv = "0.15"
+zed_extension_api = "0.6.0"
