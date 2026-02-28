@@ -10,6 +10,6 @@ repository = "https://github.com/michaelmccabe/please-build"
 repository = "https://github.com/tree-sitter-grammars/tree-sitter-starlark"
 rev = "a453dbf3ba433db0e5ec621a38a7e59d72e4dc69"
 
-[language_servers.build-langserver]
+[language_servers.build_langserver]
 name = "Please LSP"
 languages = ["Please"]
